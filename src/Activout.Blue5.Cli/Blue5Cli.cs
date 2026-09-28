@@ -31,6 +31,7 @@ internal sealed class Blue5Cli(
         };
         root.Subcommands.Add(ProductCommand());
         root.Subcommands.Add(AttributeCommand());
+        root.Subcommands.Add(ContextCommand());
         return root.Parse(args).InvokeAsync(new InvocationConfiguration { Output = output, Error = error }, cancellationToken);
     }
 
@@ -159,6 +160,21 @@ internal sealed class Blue5Cli(
         }));
 
         return new Command("attribute", "Read attribute values") { get };
+    }
+
+    private Command ContextCommand()
+    {
+        var format = Format("table", "json");
+        var list = new Command("list", "List the contexts (languages/publications) available to the API key") { format };
+        list.SetAction((parse, ct) => Execute(parse, ct, async client =>
+        {
+            var contexts = await client.GetContexts(ct);
+            if (parse.GetValue(format) == "json") Output.WriteJson(output, contexts, indented: true);
+            else Output.WriteContextTable(output, contexts);
+            return 0;
+        }));
+
+        return new Command("context", "Read PAPI contexts") { list };
     }
 
     private static Option<string> Format(params string[] formats)

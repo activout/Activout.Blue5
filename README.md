@@ -62,7 +62,16 @@ var swedish = client.WithContext("sv");
 var product = await swedish.Products.GetByNumber("A-1001");
 ```
 
-`GET {BaseAddress}/v1/contexts` lists the contexts available to your API key.
+List the contexts available to your API key:
+
+```csharp
+foreach (var context in await client.GetContexts())
+{
+    Console.WriteLine($"{context.Id}: {context.Name}");   // e.g. "l3598: Swedish"
+}
+```
+
+If queries return no products at all, you are probably using the wrong context. The default is `en`.
 
 ## Products
 
@@ -219,6 +228,7 @@ export BLUE5_BASE_URL=https://api.bluestonepim.com
 export BLUE5_API_KEY=...          # never echoed
 export BLUE5_CONTEXT=en           # optional
 
+blue5 context list                             # contexts you can pass to --context
 blue5 product get A-1001                       # details (--format json for machines)
 blue5 product list --limit 20                  # table, json or ndjson
 blue5 product find --label new --type single --attr colour=Red --page 1

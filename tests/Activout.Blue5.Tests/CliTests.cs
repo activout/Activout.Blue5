@@ -136,6 +136,16 @@ public class CliTests
     }
 
     [Fact]
+    public async Task ContextList_PrintsTable()
+    {
+        _mock.When(HttpMethod.Get, Root + "contexts")
+            .Respond("application/json", """[{"context":"en","contextName":"English"},{"context":"l3598","contextName":"Swedish"}]""");
+
+        Assert.Equal(0, await Run("context", "list"));
+        Assert.Equal("CONTEXT  NAME\nen       English\nl3598    Swedish\n".ReplaceLineEndings(), _output.ToString());
+    }
+
+    [Fact]
     public async Task MissingConfiguration_ExitsTwo()
     {
         var code = await new Blue5Cli(_output, _error, _mock, _ => null).Run(["product", "list"]);

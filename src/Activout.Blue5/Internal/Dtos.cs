@@ -47,6 +47,8 @@ internal sealed record PaginatedDto(long? TotalCount, List<ProductDto>? Results)
 
 internal sealed record ResultsDto(List<ProductDto>? Results);
 
+internal sealed record ContextDto(string? Context, string? ContextName);
+
 internal sealed record ErrorDto(string? Message, string? EntityId, List<string>? EntityIds);
 
 internal sealed record CursorQueryDto(string? Cursor, int Limit);

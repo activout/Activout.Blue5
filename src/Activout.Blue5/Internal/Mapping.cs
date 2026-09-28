@@ -39,6 +39,9 @@ internal static class Mapping
         Matrix = (dto.Matrix ?? []).Select(m => new MatrixColumn(m.Id ?? "", m.Name, (m.Rows ?? []).Select(ToCell).ToArray())).ToArray(),
     };
 
+    public static ContextInfo ToContext(ContextDto dto) =>
+        new(dto.Context ?? throw new JsonException("PAPI returned a context without id."), dto.ContextName);
+
     public static string ToPapi(ProductType type) => type switch
     {
         ProductType.Single => "SINGLE",

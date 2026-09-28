@@ -63,6 +63,13 @@ internal static class Output
         Row("Attributes", p.Attributes.Count);
     }
 
+    public static void WriteContextTable(TextWriter output, IReadOnlyList<ContextInfo> contexts)
+    {
+        var width = Math.Max("CONTEXT".Length, contexts.Count == 0 ? 0 : contexts.Max(c => c.Id.Length));
+        output.WriteLine($"{"CONTEXT".PadRight(width)}  NAME");
+        foreach (var context in contexts) output.WriteLine($"{context.Id.PadRight(width)}  {context.Name}");
+    }
+
     public static void WriteAttributeTable(TextWriter output, IEnumerable<ProductAttribute> attributes)
     {
         var rows = attributes.Select(a => (a.Number, Type: a.DataType ?? "", Value: OneLine(Display(a), 80))).ToList();

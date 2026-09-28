@@ -28,6 +28,13 @@ public sealed class Blue5Client
     /// <summary>Product operations.</summary>
     public ProductClient Products { get; }
 
+    /// <summary>Lists the contexts (languages/publications) published to PAPI and available to this API key.</summary>
+    public async Task<IReadOnlyList<ContextInfo>> GetContexts(CancellationToken cancellationToken = default)
+    {
+        var contexts = await _papi.Get<List<ContextDto>>("v1/contexts", cancellationToken);
+        return contexts.Select(Mapping.ToContext).ToArray();
+    }
+
     /// <summary>Returns a client for another PAPI context that shares this client's <see cref="HttpClient"/>.</summary>
     public Blue5Client WithContext(string context)
     {
