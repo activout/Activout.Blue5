@@ -40,6 +40,7 @@ must be synthetic.
 - Namespace follows folder (e.g. `Attributes/` → `Activout.Blue5.Attributes`, `Internal/` → `Activout.Blue5.Internal`).
 
 - Read-only. No write operations, no Management API.
+- Extension members use C# 14 `extension(...)` blocks, not `this` parameters.
 - No `Async` suffix on methods. Public members need XML docs (the build fails otherwise).
 - `HttpMessageHandler` is the test seam. No transport interfaces, no Activout.RestClient, no
   OpenAPI-generated code.
