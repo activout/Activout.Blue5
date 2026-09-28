@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Activout.Blue5/Activout.Blue5.csproj" />
     <Project Path="src/Activout.Blue5.Resilience/Activout.Blue5.Resilience.csproj" />
+    <Project Path="src/Activout.Blue5.Cli/Activout.Blue5.Cli.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Activout.Blue5.Tests/Activout.Blue5.Tests.csproj" />

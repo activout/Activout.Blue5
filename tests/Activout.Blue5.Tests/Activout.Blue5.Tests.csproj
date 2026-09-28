@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="../../src/Activout.Blue5/Activout.Blue5.csproj" />
     <ProjectReference Include="../../src/Activout.Blue5.Resilience/Activout.Blue5.Resilience.csproj" />
+    <ProjectReference Include="../../src/Activout.Blue5.Cli/Activout.Blue5.Cli.csproj" />
   </ItemGroup>
 
   <ItemGroup>
