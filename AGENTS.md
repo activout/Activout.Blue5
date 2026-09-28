@@ -41,6 +41,7 @@ must be synthetic.
 
 - Read-only. No write operations, no Management API.
 - Extension members use C# 14 `extension(...)` blocks, not `this` parameters.
+- `CancellationToken` is always the last parameter. Use async I/O (`WriteLineAsync`, not `WriteLine`) and pass the token.
 - No `Async` suffix on methods. Public members need XML docs (the build fails otherwise).
 - `HttpMessageHandler` is the test seam. No transport interfaces, no Activout.RestClient, no
   OpenAPI-generated code.

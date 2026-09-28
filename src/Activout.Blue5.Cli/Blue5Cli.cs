@@ -43,25 +43,25 @@ internal sealed class Blue5Cli(
         var number = new Argument<string>("number") { Description = "Product number" };
         var getFormat = Format("table", "json");
         var get = new Command("get", "Show one product") { number, getFormat };
-        get.SetAction((parse, ct) => Execute(parse, ct, async client =>
+        get.SetAction((parse, ct) => Execute(parse, async client =>
         {
             var p = await client.Products.GetByNumber(parse.GetValue(number)!, ct);
-            if (p is null) return NotFound($"Product '{parse.GetValue(number)}'");
-            if (parse.GetValue(getFormat) == "json") Output.WriteJson(output, p, indented: true);
-            else Output.WriteProductDetails(output, p);
+            if (p is null) return await NotFound($"Product '{parse.GetValue(number)}'", ct);
+            if (parse.GetValue(getFormat) == "json") await Output.WriteJson(output, p, indented: true, ct);
+            else await Output.WriteProductDetails(output, p, ct);
             return 0;
-        }));
+        }, ct));
 
         var limit = new Option<int?>("--limit", "-n") { Description = "Stop after this many products" };
         var listFormat = Format("table", "json", "ndjson");
         var list = new Command("list", "List products (cursor streaming)") { limit, listFormat };
-        list.SetAction((parse, ct) => Execute(parse, ct, async client =>
+        list.SetAction((parse, ct) => Execute(parse, async client =>
         {
             var products = client.Products.GetAll(ct);
             if (parse.GetValue(limit) is { } n) products = products.Take(n);
             await Output.WriteProducts(output, products, parse.GetValue(listFormat)!, ct);
             return 0;
-        }));
+        }, ct));
 
         var numbers = new Option<string[]>("--number") { Description = "Product number (repeatable)" };
         var names = new Option<string[]>("--name") { Description = "Name must contain (repeatable)" };
@@ -75,7 +75,7 @@ internal sealed class Blue5Cli(
         var all = new Option<bool>("--all") { Description = "Stream all pages instead of one" };
         var findFormat = Format("table", "json", "ndjson");
         var find = new Command("find", "Search products") { numbers, names, labels, categories, types, attrs, sort, page, pageSize, all, findFormat };
-        find.SetAction((parse, ct) => Execute(parse, ct, async client =>
+        find.SetAction((parse, ct) => Execute(parse, async client =>
         {
             var filters = new List<AttributeFilter>();
             foreach (var attr in parse.GetValue(attrs) ?? [])
@@ -105,35 +105,35 @@ internal sealed class Blue5Cli(
             var result = await client.Products.Find(query, parse.GetValue(page), parse.GetValue(pageSize), ct);
             if (format == "json")
             {
-                Output.WriteJson(output, result, indented: true);
+                await Output.WriteJson(output, result, indented: true, ct);
             }
             else
             {
                 await Output.WriteProducts(output, result.Items.ToAsyncEnumerable(), format, ct);
-                if (format == "table") error.WriteLine($"Page {result.Page}: {result.Items.Count} of {result.TotalCount} matches.");
+                if (format == "table") await Output.WriteLine(error, $"Page {result.Page}: {result.Items.Count} of {result.TotalCount} matches.", ct);
             }
 
             return 0;
-        }));
+        }, ct));
 
         var attributesFormat = Format("table", "json");
         var attributes = new Command("attributes", "Show a product's attributes") { number, attributesFormat };
-        attributes.SetAction((parse, ct) => Execute(parse, ct, async client =>
+        attributes.SetAction((parse, ct) => Execute(parse, async client =>
         {
             var p = await client.Products.GetByNumber(parse.GetValue(number)!, ct);
-            if (p is null) return NotFound($"Product '{parse.GetValue(number)}'");
-            if (parse.GetValue(attributesFormat) == "json") Output.WriteJson(output, p.Attributes, indented: true);
-            else Output.WriteAttributeTable(output, p.Attributes);
+            if (p is null) return await NotFound($"Product '{parse.GetValue(number)}'", ct);
+            if (parse.GetValue(attributesFormat) == "json") await Output.WriteJson(output, p.Attributes, indented: true, ct);
+            else await Output.WriteAttributeTable(output, p.Attributes, ct);
             return 0;
-        }));
+        }, ct));
 
         var exportFormat = Format("ndjson", "json");
         var export = new Command("export", "Stream all products as NDJSON or a JSON array") { exportFormat };
-        export.SetAction((parse, ct) => Execute(parse, ct, async client =>
+        export.SetAction((parse, ct) => Execute(parse, async client =>
         {
             await Output.WriteProducts(output, client.Products.GetAll(ct), parse.GetValue(exportFormat)!, ct);
             return 0;
-        }));
+        }, ct));
 
         product.Subcommands.Add(get);
         product.Subcommands.Add(list);
@@ -149,16 +149,16 @@ internal sealed class Blue5Cli(
         var attributeNumber = new Argument<string>("attribute-number") { Description = "Attribute number" };
         var format = Format("text", "json");
         var get = new Command("get", "Show one attribute value of a product") { productNumber, attributeNumber, format };
-        get.SetAction((parse, ct) => Execute(parse, ct, async client =>
+        get.SetAction((parse, ct) => Execute(parse, async client =>
         {
             var p = await client.Products.GetByNumber(parse.GetValue(productNumber)!, ct);
-            if (p is null) return NotFound($"Product '{parse.GetValue(productNumber)}'");
+            if (p is null) return await NotFound($"Product '{parse.GetValue(productNumber)}'", ct);
             var attribute = p.Attributes.Find(parse.GetValue(attributeNumber)!);
-            if (attribute is null) return NotFound($"Attribute '{parse.GetValue(attributeNumber)}' on product '{p.Number}'");
-            if (parse.GetValue(format) == "json") Output.WriteJson(output, attribute, indented: true);
-            else Output.WriteAttributeText(output, attribute);
+            if (attribute is null) return await NotFound($"Attribute '{parse.GetValue(attributeNumber)}' on product '{p.Number}'", ct);
+            if (parse.GetValue(format) == "json") await Output.WriteJson(output, attribute, indented: true, ct);
+            else await Output.WriteAttributeText(output, attribute, ct);
             return 0;
-        }));
+        }, ct));
 
         return new Command("attribute", "Read attribute values") { get };
     }
@@ -167,13 +167,13 @@ internal sealed class Blue5Cli(
     {
         var format = Format("table", "json");
         var list = new Command("list", "List the contexts (languages/publications) available to the API key") { format };
-        list.SetAction((parse, ct) => Execute(parse, ct, async client =>
+        list.SetAction((parse, ct) => Execute(parse, async client =>
         {
             var contexts = await client.GetContexts(ct);
-            if (parse.GetValue(format) == "json") Output.WriteJson(output, contexts, indented: true);
-            else Output.WriteContextTable(output, contexts);
+            if (parse.GetValue(format) == "json") await Output.WriteJson(output, contexts, indented: true, ct);
+            else await Output.WriteContextTable(output, contexts, ct);
             return 0;
-        }));
+        }, ct));
 
         return new Command("context", "Read PAPI contexts") { list };
     }
@@ -191,13 +191,13 @@ internal sealed class Blue5Cli(
 
     private static T[]? NullIfEmpty<T>(T[]? values) => values is { Length: > 0 } ? values : null;
 
-    private int NotFound(string what)
+    private async Task<int> NotFound(string what, CancellationToken cancellationToken)
     {
-        error.WriteLine($"{what} not found.");
+        await Output.WriteLine(error, $"{what} not found.", cancellationToken);
         return 1;
     }
 
-    private async Task<int> Execute(ParseResult parse, CancellationToken cancellationToken, Func<Blue5Client, Task<int>> action)
+    private async Task<int> Execute(ParseResult parse, Func<Blue5Client, Task<int>> action, CancellationToken cancellationToken)
     {
         var verbose = parse.GetValue(_verbose);
         try
@@ -207,7 +207,7 @@ internal sealed class Blue5Cli(
         }
         catch (UsageException ex)
         {
-            error.WriteLine(ex.Message);
+            await Output.WriteLine(error, ex.Message, cancellationToken);
             return 2;
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -216,8 +216,8 @@ internal sealed class Blue5Cli(
         }
         catch (Exception ex) when (ex is BluestoneException or AttributeConversionException or HttpRequestException)
         {
-            error.WriteLine(verbose ? ex.ToString() : $"Error: {ex.Message}");
-            if (ex is BluestoneException { RequestId: { } id }) error.WriteLine($"Request id: {id}");
+            await Output.WriteLine(error, verbose ? ex.ToString() : $"Error: {ex.Message}", cancellationToken);
+            if (ex is BluestoneException { RequestId: { } id }) await Output.WriteLine(error, $"Request id: {id}", cancellationToken);
             return 1;
         }
     }
@@ -255,7 +255,7 @@ internal sealed class Blue5Cli(
         {
             var stopwatch = Stopwatch.StartNew();
             var response = await base.SendAsync(request, cancellationToken);
-            error.WriteLine($"{request.Method} {request.RequestUri} -> {(int)response.StatusCode} ({stopwatch.ElapsedMilliseconds} ms)");
+            await Output.WriteLine(error, $"{request.Method} {request.RequestUri} -> {(int)response.StatusCode} ({stopwatch.ElapsedMilliseconds} ms)", cancellationToken);
             return response;
         }
     }
