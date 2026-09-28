@@ -68,7 +68,7 @@ internal sealed class Blue5Cli(
         var types = new Option<ProductType[]>("--type") { Description = "Product type: Single, Variant, Group, Bundle, Family (repeatable)" };
         var attrs = new Option<string[]>("--attr") { Description = "Attribute filter <number>=<value> (repeatable)" };
         var sort = new Option<string?>("--sort") { Description = "Sort, e.g. number or name:desc" };
-        var page = new Option<int>("--page") { Description = "1-based page", DefaultValueFactory = _ => 1 };
+        var page = new Option<int>("--page") { Description = "0-based page", DefaultValueFactory = _ => 0 };
         var pageSize = new Option<int>("--page-size") { Description = $"Page size (max {ProductClient.MaxPageSize})", DefaultValueFactory = _ => ProductClient.MaxPageSize };
         var all = new Option<bool>("--all") { Description = "Stream all pages instead of one" };
         var findFormat = Format("table", "json", "ndjson");

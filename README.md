@@ -109,13 +109,13 @@ var query = new ProductQuery
     Sort = "name:desc",
 };
 
-ProductPage page = await client.Products.Find(query, page: 1, pageSize: 50);
+ProductPage page = await client.Products.Find(query, page: 0, pageSize: 50);
 Console.WriteLine($"{page.Items.Count} of {page.TotalCount}");
 
 await foreach (var p in client.Products.FindAll(query)) { /* ... */ }
 ```
 
-Pages are 1-based and at most 50 items each (the PAPI limit, `ProductClient.MaxPageSize`).
+Pages are 0-based, like PAPI's `pageNo`, and at most 50 items each (the PAPI limit, `ProductClient.MaxPageSize`).
 
 ## Attributes
 
@@ -221,7 +221,7 @@ export BLUE5_CONTEXT=en           # optional
 
 blue5 product get A-1001                       # details (--format json for machines)
 blue5 product list --limit 20                  # table, json or ndjson
-blue5 product find --label new --type single --attr colour=Red --page 2
+blue5 product find --label new --type single --attr colour=Red --page 1
 blue5 product find --label new --all --format ndjson
 blue5 product attributes A-1001                # attribute table
 blue5 attribute get A-1001 colour              # just the value(s)
@@ -240,7 +240,7 @@ document. Each is covered by a test.
 
 - The API lives under `/v1` of the environment root (`https://api.bluestonepim.com/v1`).
   `BaseAddress` is the root.
-- `/products/list` `pageNo` is **0-based**. Blue5 exposes 1-based pages.
+- `/products/list` `pageNo` is **0-based** (not stated in the OpenAPI document). Blue5 uses the same numbering.
 - `/products/list` rejects `itemsOnPage` above **50**. `/products/cursor/all` accepts `limit` up
   to 100.
 - The cursor endpoint returns a non-null `nextCursor` even on the last page of data. The end of the

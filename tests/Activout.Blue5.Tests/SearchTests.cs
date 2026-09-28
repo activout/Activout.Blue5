@@ -6,7 +6,7 @@ namespace Activout.Blue5.Tests;
 public class SearchTests
 {
     [Fact]
-    public async Task Find_SendsZeroBasedPageAndOnlySetFilters()
+    public async Task Find_SendsPageAsPageNoAndOnlySetFilters()
     {
         var mock = new MockHttpMessageHandler();
         mock.Expect(HttpMethod.Post, Root + "products/list")
@@ -22,10 +22,10 @@ public class SearchTests
             Sort = "name:desc",
         };
 
-        var page = await Client(mock).Products.Find(query, page: 3, pageSize: 10);
+        var page = await Client(mock).Products.Find(query, page: 2, pageSize: 10);
 
         mock.VerifyNoOutstandingExpectation();
-        Assert.Equal((21L, 3, 10, false), (page.TotalCount, page.Page, page.PageSize, page.HasNextPage));
+        Assert.Equal((21L, 2, 10, false), (page.TotalCount, page.Page, page.PageSize, page.HasNextPage));
         Assert.Equal("A1", Assert.Single(page.Items).Number);
     }
 
@@ -45,7 +45,7 @@ public class SearchTests
     }
 
     [Theory]
-    [InlineData(0, 10)]
+    [InlineData(-1, 10)]
     [InlineData(1, 0)]
     [InlineData(1, 51)]
     public async Task Find_RejectsInvalidPaging(int page, int pageSize) =>

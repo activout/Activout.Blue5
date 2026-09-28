@@ -70,18 +70,17 @@ public sealed class ProductClient
 
     /// <summary>Searches products and returns one page, including the total match count.</summary>
     /// <param name="query">Filters; <see cref="ProductQuery.All"/> for everything.</param>
-    /// <param name="page">1-based page number.</param>
+    /// <param name="page">0-based page number (as PAPI's <c>pageNo</c>).</param>
     /// <param name="pageSize">Page size, 1 to <see cref="MaxPageSize"/>.</param>
     /// <param name="cancellationToken">Cancellation.</param>
-    public async Task<ProductPage> Find(ProductQuery query, int page = 1, int pageSize = MaxPageSize, CancellationToken cancellationToken = default)
+    public async Task<ProductPage> Find(ProductQuery query, int page = 0, int pageSize = MaxPageSize, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(query);
-        ArgumentOutOfRangeException.ThrowIfLessThan(page, 1);
+        ArgumentOutOfRangeException.ThrowIfNegative(page);
         ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(pageSize, MaxPageSize);
 
-        // PAPI pageNo is 0-based; Blue5 pages are 1-based.
-        var path = string.Create(CultureInfo.InvariantCulture, $"v1/products/list?pageNo={page - 1}&itemsOnPage={pageSize}");
+        var path = string.Create(CultureInfo.InvariantCulture, $"v1/products/list?pageNo={page}&itemsOnPage={pageSize}");
         if (!string.IsNullOrEmpty(query.Sort))
         {
             path += "&sort=" + Uri.EscapeDataString(query.Sort);
@@ -95,7 +94,7 @@ public sealed class ProductClient
     /// <summary>Streams every product matching <paramref name="query"/>, walking search pages lazily.</summary>
     public async IAsyncEnumerable<Product> FindAll(ProductQuery query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        for (var page = 1; ; page++)
+        for (var page = 0; ; page++)
         {
             var result = await Find(query, page, MaxPageSize, cancellationToken);
             foreach (var product in result.Items)

@@ -39,10 +39,10 @@ public readonly record struct AttributeFilter(string Number, string Value);
 /// <summary>One page of <see cref="ProductClient.Find"/> results.</summary>
 /// <param name="Items">Products on this page.</param>
 /// <param name="TotalCount">Total number of matches reported by PAPI.</param>
-/// <param name="Page">1-based page number.</param>
+/// <param name="Page">0-based page number.</param>
 /// <param name="PageSize">Requested page size.</param>
 public sealed record ProductPage(IReadOnlyList<Product> Items, long TotalCount, int Page, int PageSize)
 {
     /// <summary>Whether a following page has results.</summary>
-    public bool HasNextPage => (long)Page * PageSize < TotalCount;
+    public bool HasNextPage => (Page + 1L) * PageSize < TotalCount;
 }
