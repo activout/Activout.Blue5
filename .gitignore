@@ -1,0 +1,13 @@
+bin/
+obj/
+artifacts/
+*.user
+.vs/
+.idea/
+.DS_Store
+
+# Local secrets
+.env
+
+# Local spec (not committed)
+Activout.Blue5-Code-Agent-Specification.md
