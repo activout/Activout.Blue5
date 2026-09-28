@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Activout.Blue5/Activout.Blue5.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Activout.Blue5.Tests/Activout.Blue5.Tests.csproj" />
+  </Folder>
+</Solution>
