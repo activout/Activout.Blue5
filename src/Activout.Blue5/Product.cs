@@ -1,3 +1,5 @@
+using Activout.Blue5.Attributes;
+
 namespace Activout.Blue5;
 
 /// <summary>A product as published to PAPI in one context.</summary>

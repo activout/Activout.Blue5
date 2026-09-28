@@ -1,5 +1,6 @@
 using System.CommandLine;
 using System.Diagnostics;
+using Activout.Blue5.Attributes;
 using Activout.Blue5.Resilience;
 using Microsoft.Extensions.DependencyInjection;
 

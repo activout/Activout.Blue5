@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Activout.Blue5.Attributes;
 
 namespace Activout.Blue5.Internal;
 

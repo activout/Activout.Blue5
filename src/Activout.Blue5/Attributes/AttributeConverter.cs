@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Activout.Blue5;
+namespace Activout.Blue5.Attributes;
 
 /// <summary>
 /// Converts a non-empty <see cref="ProductAttribute"/> to a requested type. Scalars are parsed from the single

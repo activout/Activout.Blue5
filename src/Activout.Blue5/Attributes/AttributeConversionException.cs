@@ -1,4 +1,4 @@
-namespace Activout.Blue5;
+namespace Activout.Blue5.Attributes;
 
 /// <summary>An attribute value exists but cannot be converted to the requested type.</summary>
 public sealed class AttributeConversionException : Exception

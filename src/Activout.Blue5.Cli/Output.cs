@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Activout.Blue5.Attributes;
 
 namespace Activout.Blue5.Cli;
 

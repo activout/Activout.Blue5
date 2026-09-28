@@ -128,9 +128,12 @@ Pages are 0-based, like PAPI's `pageNo`, and at most 50 items each (the PAPI lim
 
 ## Attributes
 
-Define typed keys once. Your domain types need no annotations or reflection:
+Define typed keys once. Your domain types need no annotations or reflection. The attribute types live in
+the `Activout.Blue5.Attributes` namespace:
 
 ```csharp
+using Activout.Blue5.Attributes;
+
 public static class Attributes
 {
     public static readonly AttributeKey<string> Name = new("name", string.Empty);

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Activout.Blue5;
+namespace Activout.Blue5.Attributes;
 
 /// <summary>
 /// One attribute value on a product, close to what PAPI returns. Use it to inspect attributes that

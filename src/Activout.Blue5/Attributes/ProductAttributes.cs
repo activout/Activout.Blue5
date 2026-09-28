@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Activout.Blue5;
+namespace Activout.Blue5.Attributes;
 
 /// <summary>A product's attributes, indexed once by attribute number (ordinal comparison).</summary>
 public sealed class ProductAttributes : IReadOnlyCollection<ProductAttribute>

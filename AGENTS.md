@@ -13,7 +13,7 @@ attribute access, and lazy cursor streaming.
 ```
 src/Activout.Blue5/                 core (namespace Activout.Blue5)
   Blue5Client.cs, ProductClient.cs  public API
-  Attributes/                       ProductAttributes, AttributeKey<T>, value models, AttributeConverter
+  Attributes/                       namespace Activout.Blue5.Attributes: ProductAttributes, AttributeKey<T>, value models, AttributeConverter
   Internal/Papi.cs                  the only HttpClient code: headers, JSON, error → BluestoneException
   Internal/Dtos.cs, Mapping.cs      hand-written PAPI DTOs and DTO → public model mapping
 src/Activout.Blue5.Resilience/      AddBlue5Resilience() on IHttpClientBuilder (Microsoft.Extensions.Http.Resilience)
@@ -36,6 +36,8 @@ checks. Only make read-only calls, never print the key, and never commit real PA
 must be synthetic.
 
 ## Rules
+
+- Namespace follows folder (e.g. `Attributes/` → `Activout.Blue5.Attributes`, `Internal/` → `Activout.Blue5.Internal`).
 
 - Read-only. No write operations, no Management API.
 - No `Async` suffix on methods. Public members need XML docs (the build fails otherwise).

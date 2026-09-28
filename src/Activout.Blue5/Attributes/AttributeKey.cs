@@ -1,4 +1,4 @@
-namespace Activout.Blue5;
+namespace Activout.Blue5.Attributes;
 
 /// <summary>
 /// A typed reference to a Bluestone attribute, used with <see cref="ProductAttributes.Get{T}"/>.
