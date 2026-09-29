@@ -33,6 +33,8 @@ internal static class Mapping
         GroupNumber = dto.GroupNumber,
         GroupName = dto.GroupName,
         IsCompound = dto.IsCompound ?? false,
+        IsDefining = dto.DefiningAttribute ?? false,
+        ValueType = dto.ValueType,
         Values = (dto.Values ?? []).OfType<string>().ToArray(),
         Select = (dto.Select ?? []).Select(ToOption).ToArray(),
         Dictionary = (dto.Dictionary ?? []).Select(ToOption).ToArray(),

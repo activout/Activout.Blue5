@@ -65,6 +65,22 @@ public class AttributeLookupTests
     }
 
     [Fact]
+    public void Find_ExposesDefiningAttributeAndColourValueType()
+    {
+        // Shape observed on live PAPI: a colour select with hex metadata that also defines variants.
+        var raw = ProductWith(
+            """
+            {"id":"a1","number":"colour","dataType":"single_select","valueType":"color","definingAttribute":true,"values":["Green"],
+             "select":[{"id":"o1","number":"green","value":"Green","metadata":"#00ff00"}]}
+            """).Attributes.Find("colour")!;
+
+        Assert.True(raw.IsDefining);
+        Assert.Equal("color", raw.ValueType);
+        Assert.Equal("#00ff00", Assert.Single(raw.Select).Metadata);
+        Assert.False(ProductWith(Attribute("plain", "text", "x")).Attributes.Find("plain")!.IsDefining);
+    }
+
+    [Fact]
     public void ConsumersCanBuildProductsForTheirOwnTests()
     {
         var product = new Product

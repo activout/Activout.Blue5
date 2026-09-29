@@ -35,6 +35,15 @@ public sealed record ProductAttribute
     /// <summary>Whether this is a compound attribute (its value is composed from other attributes).</summary>
     public bool IsCompound { get; init; }
 
+    /// <summary>Whether this attribute defines the variants of a product group (PAPI <c>definingAttribute</c>).</summary>
+    public bool IsDefining { get; init; }
+
+    /// <summary>
+    /// PAPI <c>valueType</c>, a hint on how to interpret the value. Observed: <c>color</c> on selects, where each
+    /// <see cref="SelectOption.Metadata"/> holds a hex colour such as <c>#ff0000</c>.
+    /// </summary>
+    public string? ValueType { get; init; }
+
     /// <summary>Raw string values. Scalar types have at most one; select types repeat the display values.</summary>
     public IReadOnlyList<string> Values { get; init; } = [];
 

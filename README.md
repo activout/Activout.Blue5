@@ -266,6 +266,12 @@ document. Each is covered by a test.
   was throttled several times. The response is a bare `429 {"message":"Too Many Requests"}` with no
   `Retry-After` and no `x-request-tracker`. Use Activout.Blue5.Resilience (or your own policy) for bulk
   reads.
+- Attributes carry two undocumented fields, exposed on `ProductAttribute`: `definingAttribute`
+  (`IsDefining`, marks variant-defining attributes) and `valueType` (`ValueType`). A `color` value
+  type on a select puts a hex colour in each option's `Metadata`.
+- Attribute values depend on the context: the same attribute can have a value in one context and
+  `"values": []` in another. Blue5 treats an attribute without values as missing and returns the
+  key's `DefaultValue`.
 - Responses leave out empty collections and include fields the spec doesn't mention (such as
   `publishInfoRef`). Blue5 ignores unknown fields.
 

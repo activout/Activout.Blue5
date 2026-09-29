@@ -29,6 +29,8 @@ internal sealed record AttributeDto(
     string? DataType,
     string? ContentType,
     bool? IsCompound,
+    bool? DefiningAttribute,
+    string? ValueType,
     List<string?>? Values,
     List<SelectDto>? Select,
     List<SelectDto>? Dictionary,
