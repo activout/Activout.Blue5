@@ -62,7 +62,7 @@ internal sealed class Papi(HttpClient http, Uri root, string apiKey, string cont
         var papiMessage = string.IsNullOrEmpty(error?.Message) ? null : error.Message;
         var detail = papiMessage ?? (body.Length > 200 ? body[..200] + "…" : body);
         var status = (int)response.StatusCode;
-        var message = $"PAPI {request.Method} {request.RequestUri!.AbsolutePath} failed with {status} {response.ReasonPhrase}"
+        var message = $"PAPI {request.Method} {request.RequestUri!.AbsolutePath} failed with {status}{(string.IsNullOrEmpty(response.ReasonPhrase) ? "" : " " + response.ReasonPhrase)}"
                       + (string.IsNullOrWhiteSpace(detail) ? "." : $": {detail}")
                       + (error?.EntityId is { } id ? $" (entity {id})" : "");
         var requestId = response.Headers.TryGetValues("x-request-tracker", out var values) ? values.FirstOrDefault() : null;

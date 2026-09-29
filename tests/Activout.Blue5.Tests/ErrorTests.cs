@@ -50,6 +50,25 @@ public class ErrorTests
     }
 
     [Fact]
+    public async Task Http2ResponseWithoutReasonPhrase_HasCleanMessage()
+    {
+        // Observed: PAPI answers over HTTP/2 (no reason phrase) with a bare 429, no Retry-After or request id.
+        var mock = new MockHttpMessageHandler();
+        mock.When(HttpMethod.Post, Root + "products/list").Respond(_ =>
+        {
+            var response = Json("""{"message":"Too Many Requests"}""", HttpStatusCode.TooManyRequests);
+            response.ReasonPhrase = ""; // what SocketsHttpHandler reports over HTTP/2
+            return response;
+        });
+
+        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.Find(ProductQuery.All));
+
+        Assert.Equal("PAPI POST /v1/products/list failed with 429: Too Many Requests", ex.Message);
+        Assert.True(ex.IsRateLimited);
+        Assert.Null(ex.RequestId);
+    }
+
+    [Fact]
     public async Task NonJsonErrorBody_IsIncludedInMessage()
     {
         var mock = new MockHttpMessageHandler();

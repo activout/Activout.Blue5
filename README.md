@@ -262,6 +262,10 @@ document. Each is covered by a test.
 - `/products/by-numbers` accepts 1–100 numbers. `GetByNumbers` batches larger inputs.
 - Error bodies are `{"message": "...", "entityId": "..."}` without the documented `status`. A
   missing or wrong API key gives `403 {"message":"Forbidden"}`.
+- PAPI does return **429** in practice: a sequential `FindAll()` over ~6,000 products (125 requests)
+  was throttled several times. The response is a bare `429 {"message":"Too Many Requests"}` with no
+  `Retry-After` and no `x-request-tracker`. Use Activout.Blue5.Resilience (or your own policy) for bulk
+  reads.
 - Responses leave out empty collections and include fields the spec doesn't mention (such as
   `publishInfoRef`). Blue5 ignores unknown fields.
 
