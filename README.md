@@ -275,6 +275,18 @@ document. Each is covered by a test.
 - Responses leave out empty collections and include fields the spec doesn't mention (such as
   `publishInfoRef`). Blue5 ignores unknown fields.
 
+## Verifying packages
+
+The packages are published from GitHub Actions with NuGet trusted publishing. Each one carries a
+[build provenance attestation](https://docs.github.com/actions/security-for-github-actions/using-artifact-attestations)
+that links it to this repository, workflow and commit:
+
+```bash
+gh attestation verify Activout.Blue5.0.1.0.nupkg -R activout/Activout.Blue5
+```
+
+Symbol packages (`.snupkg`) and SourceLink let you step into the Blue5 source while debugging.
+
 ## Links
 
 - [Bluestone PIM Public API reference](https://docs.api.bluestonepim.com/)

@@ -61,4 +61,6 @@ must be synthetic.
 `.github/workflows/publish.yml` packs all packages and pushes them to NuGet.org on `v*` tags using
 NuGet trusted publishing (GitHub OIDC via `NuGet/login`, no long-lived API key). It needs the
 `NUGET_USER` repository secret (nuget.org profile name) and a nuget.org trusted publishing policy for
-owner `activout`, repository `Activout.Blue5` and workflow file `publish.yml`.
+owner `activout`, repository `Activout.Blue5` and workflow file `publish.yml`. It also publishes
+`.snupkg` symbol packages and a keyless build provenance attestation (`actions/attest-build-provenance`)
+for every package. There is no author signing; nuget.org adds its repository signature.
