@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write # GitHub OIDC token for NuGet trusted publishing
 
 jobs:
   publish:
@@ -44,5 +45,12 @@ jobs:
           path: artifacts/*.nupkg
           if-no-files-found: error
 
+      # Exchange the OIDC token for a short-lived (1 hour) API key right before pushing.
+      - name: NuGet login (trusted publishing)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Push to NuGet.org
-        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
