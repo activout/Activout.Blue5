@@ -7,7 +7,8 @@ on:
 
 permissions:
   contents: read
-  id-token: write # GitHub OIDC token for NuGet trusted publishing
+  id-token: write # GitHub OIDC token for NuGet trusted publishing and provenance attestations
+  attestations: write
 
 jobs:
   publish:
@@ -42,8 +43,18 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: nuget-packages
-          path: artifacts/*.nupkg
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
           if-no-files-found: error
+
+      # Keyless Sigstore provenance; verify with: gh attestation verify <file>.nupkg -R activout/Activout.Blue5
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
 
       # Exchange the OIDC token for a short-lived (1 hour) API key right before pushing.
       - name: NuGet login (trusted publishing)
