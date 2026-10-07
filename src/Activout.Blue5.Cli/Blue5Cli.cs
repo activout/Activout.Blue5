@@ -160,7 +160,19 @@ internal sealed class Blue5Cli(
             return 0;
         }, ct));
 
-        return new Command("attribute", "Read attribute values") { get };
+        var attributeId = new Argument<string>("attribute-id") { Description = "Dictionary attribute id (not its number)" };
+        var limit = new Option<int?>("--limit", "-n") { Description = "Stop after this many values" };
+        var valuesFormat = Format("table", "json", "ndjson");
+        var values = new Command("values", "List every value defined for a dictionary attribute (cursor streaming)") { attributeId, limit, valuesFormat };
+        values.SetAction((parse, ct) => Execute(parse, async client =>
+        {
+            var items = client.GetDictionaryValues(parse.GetValue(attributeId)!, ct);
+            if (parse.GetValue(limit) is { } n) items = items.Take(n);
+            await Output.WriteDictionaryValues(output, items, parse.GetValue(valuesFormat)!, ct);
+            return 0;
+        }, ct));
+
+        return new Command("attribute", "Read attribute values") { get, values };
     }
 
     private Command ContextCommand()

@@ -251,6 +251,7 @@ blue5 product find --label new --type single --attr colour=Red --page 1
 blue5 product find --label new --all --format ndjson
 blue5 product attributes A-1001                # attribute table
 blue5 attribute get A-1001 colour              # just the value(s)
+blue5 attribute values 5f59cf80cff47e000c2ea630   # all values of a dictionary attribute (by id)
 blue5 product export --format ndjson > catalogue.ndjson   # streams; constant memory
 ```
 
