@@ -17,7 +17,22 @@ internal sealed record ProductDto(
     string? VariantParentId,
     string? GroupParentId,
     double? LastUpdate,
-    double? CreateDate);
+    double? CreateDate,
+    List<MediaDto>? Media);
+
+internal sealed record MediaDto(
+    string? Id,
+    string? Number,
+    string? Name,
+    string? Description,
+    string? FileName,
+    string? ContentType,
+    string? DownloadUri,
+    string? PreviewUri,
+    List<string>? Labels,
+    double? CreatedAt,
+    double? UpdatedAt,
+    List<AttributeDto>? Attributes);
 
 internal sealed record AttributeDto(
     string? Id,

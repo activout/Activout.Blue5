@@ -20,6 +20,23 @@ internal static class Mapping
         LastUpdate = ToTimestamp(dto.LastUpdate),
         CreateDate = ToTimestamp(dto.CreateDate),
         Attributes = new ProductAttributes((dto.Attributes ?? []).Select(ToAttribute)),
+        Media = (dto.Media ?? []).Select(ToMedia).ToArray(),
+    };
+
+    public static MediaAsset ToMedia(MediaDto dto) => new()
+    {
+        Id = dto.Id,
+        Number = dto.Number,
+        Name = dto.Name ?? "",
+        Description = dto.Description,
+        FileName = dto.FileName,
+        ContentType = dto.ContentType ?? "",
+        DownloadUri = ToUri(dto.DownloadUri, "downloadUri", dto),
+        PreviewUri = ToUri(dto.PreviewUri, "previewUri", dto),
+        Labels = dto.Labels ?? [],
+        CreateDate = ToTimestamp(dto.CreatedAt),
+        UpdateDate = ToTimestamp(dto.UpdatedAt),
+        Attributes = new ProductAttributes((dto.Attributes ?? []).Select(ToAttribute)),
     };
 
     public static ProductAttribute ToAttribute(AttributeDto dto) => new()
@@ -77,6 +94,11 @@ internal static class Mapping
 
     private static DateTimeOffset? ToTimestamp(double? epochMilliseconds) =>
         epochMilliseconds is { } ms ? DateTimeOffset.FromUnixTimeMilliseconds((long)ms) : null;
+
+    private static Uri ToUri(string? value, string field, MediaDto dto) =>
+        Uri.TryCreate(value, UriKind.Absolute, out var uri)
+            ? uri
+            : throw new JsonException($"PAPI returned media '{dto.Id}' with a missing or invalid {field} '{value}'.");
 
     private static JsonException Invalid(string what, ProductDto dto) =>
         new($"PAPI returned a {what} (id '{dto.Id}', number '{dto.Number}').");

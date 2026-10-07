@@ -208,6 +208,18 @@ await foreach (SelectOption value in client.GetDictionaryValues(raw.Id!, cancell
 }
 ```
 
+## Media
+
+`product.Media` lists the product's media assets in PAPI order. Each `MediaAsset` has `Name`,
+`Description`, `FileName`, `ContentType`, `Labels`, `CreateDate`/`UpdateDate`, its own `Attributes`, and two
+absolute URLs: `DownloadUri` (the original file) and `PreviewUri` (a small rendition). Blue5 only
+describes assets; fetch the URLs with your own `HttpClient`.
+
+```csharp
+foreach (var image in product.Media.Where(m => m.ContentType.StartsWith("image/")))
+    Console.WriteLine($"{image.Name}: {image.DownloadUri}");
+```
+
 ## Errors and rate limits
 
 Any non-success PAPI response throws `BluestoneException`. It carries `StatusCode`,
@@ -286,6 +298,9 @@ document. Each is covered by a test.
 - Attribute values depend on the context: the same attribute can have a value in one context and
   `"values": []` in another. Blue5 treats an attribute without values as missing and returns the
   key's `DefaultValue`.
+- Media assets are embedded in each product (there are no media endpoints). `downloadUri` and
+  `previewUri` point at a separate media host; the preview is a
+  `?f=jpg&w=400` rendition of the download URL. Most products have no media (1 in 1,500 in the test tenant).
 - Responses leave out empty collections and include fields the spec doesn't mention (such as
   `publishInfoRef`). Blue5 ignores unknown fields.
 

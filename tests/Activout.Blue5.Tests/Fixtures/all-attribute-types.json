@@ -36,7 +36,17 @@
     { "id": "a16", "name": "Text", "number": "text", "dataType": "text", "values": ["Example text"], "unit": null, "valueType": null, "definingAttribute": null },
     { "id": "a17", "name": "Time", "number": "time", "dataType": "time", "values": ["11:05:31"] }
   ],
-  "media": [],
+  "media": [
+    {
+      "id": "m1", "number": "m-1", "name": "Front view", "description": "Front of the product", "fileName": "front.webp",
+      "contentType": "image/webp",
+      "downloadUri": "https://media.example.test/m1/front.webp",
+      "previewUri": "https://media.example.test/m1/front.webp?f=jpg&w=400",
+      "labels": ["web"], "createdAt": 1711534898057, "updatedAt": 1774870853227,
+      "attributes": [{ "id": "ma1", "number": "SKUS", "name": "SKUs", "dataType": "text", "values": ["654321"] }]
+    },
+    { "id": "m2", "name": "Spec sheet", "contentType": "application/pdf", "downloadUri": "https://media.example.test/m2/spec.pdf", "previewUri": "https://media.example.test/m2/spec.pdf?f=jpg&w=400", "labels": [] }
+  ],
   "labels": ["new"],
   "categories": ["5f00000000000000000000c1"],
   "relations": [],
