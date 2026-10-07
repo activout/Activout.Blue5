@@ -44,6 +44,24 @@ public sealed record Product
 
     /// <summary>Media assets (images, documents, ...) attached to the product, in PAPI order.</summary>
     public IReadOnlyList<MediaAsset> Media { get; init; } = [];
+
+    /// <summary>Relations to other products.</summary>
+    public IReadOnlyList<ProductRelation> Relations { get; init; } = [];
+
+    /// <summary>Product metadata entries.</summary>
+    public IReadOnlyList<ProductMetadata> Metadata { get; init; } = [];
+
+    /// <summary>The products a <see cref="ProductType.Bundle"/> consists of.</summary>
+    public IReadOnlyList<ProductBundleItem> Bundles { get; init; } = [];
+
+    /// <summary>Ids of the variants of this product.</summary>
+    public IReadOnlyList<string> Variants { get; init; } = [];
+
+    /// <summary>Ids of the group members of this product.</summary>
+    public IReadOnlyList<string> Groups { get; init; } = [];
+
+    /// <summary>Where the order of the related products comes from.</summary>
+    public RelationSortingOrderSource RelationSortingOrderSource { get; init; }
 }
 
 /// <summary>Bluestone product type.</summary>
