@@ -41,6 +41,9 @@ public sealed record Product
 
     /// <summary>The product's attribute values, indexed by attribute number.</summary>
     public ProductAttributes Attributes { get; init; } = ProductAttributes.Empty;
+
+    /// <summary>Media assets (images, documents, ...) attached to the product, in PAPI order.</summary>
+    public IReadOnlyList<MediaAsset> Media { get; init; } = [];
 }
 
 /// <summary>Bluestone product type.</summary>
