@@ -43,7 +43,7 @@ internal sealed record CellDto(string? Id, string? Name, string? Value);
 
 internal sealed record MatrixColumnDto(string? Id, string? Name, List<CellDto>? Rows);
 
-internal sealed record CursorPageDto(string? NextCursor, List<ProductDto>? Results);
+internal sealed record CursorPageDto<T>(string? NextCursor, List<T>? Results);
 
 internal sealed record PaginatedDto(long? TotalCount, List<ProductDto>? Results);
 

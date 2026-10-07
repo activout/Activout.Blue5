@@ -195,6 +195,19 @@ foreach (var attribute in product.Attributes) { /* all attributes, in PAPI order
 `Product`, `ProductAttributes` and `ProductAttribute` have public constructors and `init`
 properties, so your unit tests can build products without any HTTP.
 
+### Dictionary values
+
+A product's `dictionary` attribute only carries the entries selected for that product. To list every
+value defined for the attribute, pass its id (not its number). Pages of 100 are streamed lazily, as
+with `GetAll()`:
+
+```csharp
+await foreach (SelectOption value in client.GetDictionaryValues(raw.Id!, cancellationToken))
+{
+    Console.WriteLine($"{value.Number} = {value.Value}");
+}
+```
+
 ## Errors and rate limits
 
 Any non-success PAPI response throws `BluestoneException`. It carries `StatusCode`,

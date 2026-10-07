@@ -65,7 +65,7 @@ internal static class Mapping
         _ => ProductType.Unknown,
     };
 
-    private static SelectOption ToOption(SelectDto dto) => new(
+    public static SelectOption ToOption(SelectDto dto) => new(
         dto.Id ?? "",
         dto.Number,
         dto.Value,
