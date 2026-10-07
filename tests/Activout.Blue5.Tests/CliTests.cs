@@ -163,4 +163,14 @@ public class CliTests
         Assert.Contains("403", _error.ToString());
         Assert.DoesNotContain(ApiKey, _output.ToString() + _error.ToString());
     }
+
+    [Fact]
+    public async Task AttributeValues_StreamsDictionaryValues()
+    {
+        _mock.When(HttpMethod.Post, Root + "attributes/dictionary/def-1/values/cursor/all").Respond("application/json",
+            """{"nextCursor":null,"results":[{"id":"v1","definitionId":"def-1","number":"red","value":"Red"},{"id":"v2","definitionId":"def-1","number":"blue","value":"Blue"}]}""");
+
+        Assert.Equal(0, await Run("attribute", "values", "def-1", "--format", "ndjson", "--limit", "1"));
+        Assert.Equal("""{"id":"v1","number":"red","value":"Red"}""", _output.ToString().Trim());
+    }
 }

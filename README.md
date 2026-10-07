@@ -197,6 +197,20 @@ foreach (var attribute in product.Attributes) { /* all attributes, in PAPI order
 `Product`, `ProductAttributes` and `ProductAttribute` have public constructors and `init`
 properties, so your unit tests can build products without any HTTP.
 
+### Dictionary values
+
+A product's `dictionary` attribute only carries the entries selected for that product. To list every
+value defined for the attribute, pass its id (not its number). Pages of 100 are streamed lazily, as
+with `GetAll()`:
+
+```csharp
+string dictionaryAttributeId = "YOUR-DICTIONARY-ATTRIBUTE-ID";
+await foreach (SelectOption value in client.GetDictionaryValues(dictionaryAttributeId, cancellationToken))
+{
+    Console.WriteLine($"{value.Number} = {value.Value}");
+}
+```
+
 ## Media
 
 `product.Media` lists the product's media assets in PAPI order. Each `MediaAsset` has `Name`,
@@ -208,6 +222,13 @@ describes assets; fetch the URLs with your own `HttpClient`.
 foreach (var image in product.Media.Where(m => m.ContentType.StartsWith("image/")))
     Console.WriteLine($"{image.Name}: {image.DownloadUri}");
 ```
+
+## Relations, variants and bundles
+
+Besides attributes and media, a `Product` carries `Relations` (links to other products, with
+`ProductId`, `Direction` and `Reverse`), `Variants` and `Groups` (child product ids), `Bundles`
+(`ProductId` and `Quantity` per bundled product), `Metadata` (id/value entries; non-string values come
+back as raw JSON text) and `RelationSortingOrderSource`. The product references are PAPI ids, not product numbers, and Blue5 has no lookup by id yet.
 
 ## Errors and rate limits
 
@@ -252,6 +273,7 @@ blue5 product find --label new --type single --attr colour=Red --page 1
 blue5 product find --label new --all --format ndjson
 blue5 product attributes A-1001                # attribute table
 blue5 attribute get A-1001 colour              # just the value(s)
+blue5 attribute values 5f59cf80cff47e000c2ea630   # all values of a dictionary attribute (by id)
 blue5 product export --format ndjson > catalogue.ndjson   # streams; constant memory
 ```
 
@@ -290,6 +312,9 @@ document. Each is covered by a test.
 - Media assets are embedded in each product (there are no media endpoints). `downloadUri` and
   `previewUri` point at a separate media host; the preview is a
   `?f=jpg&w=400` rendition of the download URL. Most products have no media (1 in 1,500 in the test tenant).
+- In the test tenant `variants`, `bundles` and `relatedProductsRelationSortingOrderSource` occur on live products.
+  `relations`, `metadata` and `groups` did not occur in the first 2,000 products, so their mapping follows the
+  OpenAPI document only.
 - Responses leave out empty collections and include fields the spec doesn't mention (such as
   `publishInfoRef`). Blue5 ignores unknown fields.
 

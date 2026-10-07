@@ -21,19 +21,26 @@ internal static class Output
     public static Task WriteJson<T>(TextWriter output, T value, bool indented, CancellationToken cancellationToken) =>
         WriteLine(output, JsonSerializer.Serialize(value, indented ? Indented : Compact), cancellationToken);
 
-    /// <summary>Writes products as they arrive; nothing is buffered, so exports of any size stream.</summary>
-    public static async Task WriteProducts(TextWriter output, IAsyncEnumerable<Product> products, string format, CancellationToken cancellationToken)
+    public static Task WriteProducts(TextWriter output, IAsyncEnumerable<Product> products, string format, CancellationToken cancellationToken) =>
+        WriteStream(output, products, format, $"{"NUMBER",-30} {"TYPE",-8} NAME", p => $"{p.Number,-30} {p.Type,-8} {p.Name}", cancellationToken);
+
+    public static Task WriteDictionaryValues(TextWriter output, IAsyncEnumerable<SelectOption> values, string format, CancellationToken cancellationToken) =>
+        WriteStream(output, values, format, $"{"ID",-26} {"NUMBER",-30} VALUE", v => $"{v.Id,-26} {v.Number,-30} {v.Value}", cancellationToken);
+
+    /// <summary>Writes items as they arrive; nothing is buffered, so exports of any size stream.</summary>
+    private static async Task WriteStream<T>(
+        TextWriter output, IAsyncEnumerable<T> items, string format, string tableHeader, Func<T, string> tableRow, CancellationToken cancellationToken)
     {
         var first = true;
         if (format == "json") await output.WriteAsync("[".AsMemory(), cancellationToken);
-        if (format == "table") await WriteLine(output, $"{"NUMBER",-30} {"TYPE",-8} NAME", cancellationToken);
-        await foreach (var product in products.WithCancellation(cancellationToken))
+        if (format == "table") await WriteLine(output, tableHeader, cancellationToken);
+        await foreach (var item in items.WithCancellation(cancellationToken))
         {
             await (format switch
             {
-                "ndjson" => WriteLine(output, JsonSerializer.Serialize(product, Compact), cancellationToken),
-                "json" => output.WriteAsync(((first ? "\n" : ",\n") + JsonSerializer.Serialize(product, Compact)).AsMemory(), cancellationToken),
-                _ => WriteLine(output, $"{product.Number,-30} {product.Type,-8} {product.Name}", cancellationToken),
+                "ndjson" => WriteLine(output, JsonSerializer.Serialize(item, Compact), cancellationToken),
+                "json" => output.WriteAsync(((first ? "\n" : ",\n") + JsonSerializer.Serialize(item, Compact)).AsMemory(), cancellationToken),
+                _ => WriteLine(output, tableRow(item), cancellationToken),
             });
             first = false;
         }

@@ -1,3 +1,4 @@
+using Activout.Blue5.Attributes;
 using Activout.Blue5.Internal;
 
 namespace Activout.Blue5;
@@ -8,6 +9,8 @@ namespace Activout.Blue5;
 /// </summary>
 public sealed class Blue5Client
 {
+    private const int DictionaryCursorPageSize = 100; // PAPI maximum for CursorQuery.limit
+
     private readonly Papi _papi;
 
     /// <summary>Creates a client. Blue5 does not change <paramref name="httpClient"/>'s settings, so it can be shared.</summary>
@@ -33,6 +36,19 @@ public sealed class Blue5Client
     {
         var contexts = await _papi.Get<List<ContextDto>>("v1/contexts", cancellationToken);
         return contexts.Select(Mapping.ToContext).ToArray();
+    }
+
+    /// <summary>
+    /// Streams every value defined for a <c>dictionary</c> attribute, using PAPI's cursor API in pages of 100.
+    /// Pages are fetched only as enumeration needs them.
+    /// </summary>
+    /// <param name="attributeDefinitionId">The attribute's id (<see cref="ProductAttribute.Id"/>), not its number.</param>
+    /// <param name="cancellationToken">Cancellation.</param>
+    public IAsyncEnumerable<SelectOption> GetDictionaryValues(string attributeDefinitionId, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(attributeDefinitionId);
+        var path = $"v1/attributes/dictionary/{Uri.EscapeDataString(attributeDefinitionId)}/values/cursor/all";
+        return _papi.Cursor<SelectDto>(path, DictionaryCursorPageSize, cancellationToken).Select(Mapping.ToOption);
     }
 
     /// <summary>Returns a client for another PAPI context that shares this client's <see cref="HttpClient"/>.</summary>

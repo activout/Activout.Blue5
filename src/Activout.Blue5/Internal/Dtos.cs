@@ -18,7 +18,19 @@ internal sealed record ProductDto(
     string? GroupParentId,
     double? LastUpdate,
     double? CreateDate,
-    List<MediaDto>? Media);
+    List<MediaDto>? Media,
+    List<RelationDto>? Relations,
+    List<MetadataDto>? Metadata,
+    List<BundleDto>? Bundles,
+    List<string>? Variants,
+    List<string>? Groups,
+    string? RelatedProductsRelationSortingOrderSource);
+
+internal sealed record RelationDto(string? Id, string? Name, string? Number, string? ProductId, bool? Reverse, string? Direction);
+
+internal sealed record MetadataDto(string? Id, JsonElement? Value);
+
+internal sealed record BundleDto(string? ProductId, decimal? Quantity);
 
 internal sealed record MediaDto(
     string? Id,
@@ -58,7 +70,7 @@ internal sealed record CellDto(string? Id, string? Name, string? Value);
 
 internal sealed record MatrixColumnDto(string? Id, string? Name, List<CellDto>? Rows);
 
-internal sealed record CursorPageDto(string? NextCursor, List<ProductDto>? Results);
+internal sealed record CursorPageDto<T>(string? NextCursor, List<T>? Results);
 
 internal sealed record PaginatedDto(long? TotalCount, List<ProductDto>? Results);
 

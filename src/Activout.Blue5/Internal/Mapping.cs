@@ -21,6 +21,17 @@ internal static class Mapping
         CreateDate = ToTimestamp(dto.CreateDate),
         Attributes = new ProductAttributes((dto.Attributes ?? []).Select(ToAttribute)),
         Media = (dto.Media ?? []).Select(ToMedia).ToArray(),
+        Relations = (dto.Relations ?? []).Select(r => ToRelation(r, dto)).ToArray(),
+        Metadata = (dto.Metadata ?? []).Select(m => new ProductMetadata(m.Id ?? "", ToText(m.Value))).ToArray(),
+        Bundles = (dto.Bundles ?? []).Select(b => ToBundleItem(b, dto)).ToArray(),
+        Variants = dto.Variants ?? [],
+        Groups = dto.Groups ?? [],
+        RelationSortingOrderSource = dto.RelatedProductsRelationSortingOrderSource switch
+        {
+            "RELATION_DEFINITION" => RelationSortingOrderSource.RelationDefinition,
+            "PRODUCT" => RelationSortingOrderSource.Product,
+            _ => RelationSortingOrderSource.Unknown,
+        },
     };
 
     public static MediaAsset ToMedia(MediaDto dto) => new()
@@ -82,13 +93,30 @@ internal static class Mapping
         _ => ProductType.Unknown,
     };
 
-    private static SelectOption ToOption(SelectDto dto) => new(
-        dto.Id ?? "",
+    public static SelectOption ToOption(SelectDto dto) => new(dto.Id ?? "", dto.Number, dto.Value, ToText(dto.Metadata));
+
+    private static ProductRelation ToRelation(RelationDto dto, ProductDto product) => new(
+        dto.Id ?? throw Invalid("relation without id", product),
+        dto.Name,
         dto.Number,
-        dto.Value,
-        dto.Metadata is { ValueKind: not JsonValueKind.Null and not JsonValueKind.Undefined } m
+        dto.ProductId ?? throw Invalid("relation without productId", product),
+        dto.Reverse ?? false,
+        dto.Direction switch
+        {
+            "ONE_WAY" => RelationDirection.OneWay,
+            "TWO_WAY" => RelationDirection.TwoWay,
+            _ => RelationDirection.Unknown,
+        });
+
+    private static ProductBundleItem ToBundleItem(BundleDto dto, ProductDto product) => new(
+        dto.ProductId ?? throw Invalid("bundle item without productId", product),
+        dto.Quantity ?? throw Invalid("bundle item without quantity", product));
+
+    /// <summary>A string as is; any other JSON value as its raw text; null and missing as null.</summary>
+    private static string? ToText(JsonElement? value) =>
+        value is { ValueKind: not JsonValueKind.Null and not JsonValueKind.Undefined } m
             ? m.ValueKind == JsonValueKind.String ? m.GetString() : m.GetRawText()
-            : null);
+            : null;
 
     private static AttributeCell ToCell(CellDto dto) => new(dto.Id ?? "", dto.Name, dto.Value);
 

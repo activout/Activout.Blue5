@@ -70,27 +70,8 @@ public sealed class ProductClient
     /// Streams every product in the context using PAPI's cursor API. Pages of 100 are fetched only as enumeration
     /// needs them, so <c>GetAll().Take(10)</c> makes a single request.
     /// </summary>
-    public async IAsyncEnumerable<Product> GetAll([EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        string? cursor = null;
-        while (true)
-        {
-            var page = await _papi.Post<CursorPageDto>("v1/products/cursor/all", new CursorQueryDto(cursor, CursorPageSize), cancellationToken);
-            var results = page.Results ?? [];
-            foreach (var dto in results)
-            {
-                yield return Mapping.ToProduct(dto);
-            }
-
-            // PAPI returns a non-null cursor on the last data page and ends with {"nextCursor":null,"results":[]}.
-            if (results.Count == 0 || string.IsNullOrEmpty(page.NextCursor))
-            {
-                yield break;
-            }
-
-            cursor = page.NextCursor;
-        }
-    }
+    public IAsyncEnumerable<Product> GetAll(CancellationToken cancellationToken = default) =>
+        _papi.Cursor<ProductDto>("v1/products/cursor/all", CursorPageSize, cancellationToken).Select(Mapping.ToProduct);
 
     /// <summary>Searches products and returns one page, including the total match count.</summary>
     /// <param name="query">Filters; <see cref="ProductQuery.All"/> for everything.</param>
