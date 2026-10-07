@@ -93,7 +93,7 @@ internal static class Mapping
         _ => ProductType.Unknown,
     };
 
-    private static SelectOption ToOption(SelectDto dto) => new(dto.Id ?? "", dto.Number, dto.Value, ToText(dto.Metadata));
+    public static SelectOption ToOption(SelectDto dto) => new(dto.Id ?? "", dto.Number, dto.Value, ToText(dto.Metadata));
 
     private static ProductRelation ToRelation(RelationDto dto, ProductDto product) => new(
         dto.Id ?? throw Invalid("relation without id", product),

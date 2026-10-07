@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -24,6 +25,29 @@ internal sealed class Papi(HttpClient http, Uri root, string apiKey, string cont
         {
             Content = JsonContent.Create(body, body.GetType(), options: Json),
         }, cancellationToken);
+
+    /// <summary>Streams a PAPI cursor endpoint, fetching pages of <paramref name="limit"/> only as enumeration needs them.</summary>
+    public async IAsyncEnumerable<T> Cursor<T>(string path, int limit, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        string? cursor = null;
+        while (true)
+        {
+            var page = await Post<CursorPageDto<T>>(path, new CursorQueryDto(cursor, limit), cancellationToken);
+            var results = page.Results ?? [];
+            foreach (var item in results)
+            {
+                yield return item;
+            }
+
+            // PAPI returns a non-null cursor on the last data page and ends with {"nextCursor":null,"results":[]}.
+            if (results.Count == 0 || string.IsNullOrEmpty(page.NextCursor))
+            {
+                yield break;
+            }
+
+            cursor = page.NextCursor;
+        }
+    }
 
     private async Task<T> Send<T>(HttpRequestMessage request, CancellationToken cancellationToken)
     {

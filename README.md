@@ -195,6 +195,20 @@ foreach (var attribute in product.Attributes) { /* all attributes, in PAPI order
 `Product`, `ProductAttributes` and `ProductAttribute` have public constructors and `init`
 properties, so your unit tests can build products without any HTTP.
 
+### Dictionary values
+
+A product's `dictionary` attribute only carries the entries selected for that product. To list every
+value defined for the attribute, pass its id (not its number). Pages of 100 are streamed lazily, as
+with `GetAll()`:
+
+```csharp
+string dictionaryAttributeId = "YOUR-DICTIONARY-ATTRIBUTE-ID";
+await foreach (SelectOption value in client.GetDictionaryValues(dictionaryAttributeId, cancellationToken))
+{
+    Console.WriteLine($"{value.Number} = {value.Value}");
+}
+```
+
 ## Media
 
 `product.Media` lists the product's media assets in PAPI order. Each `MediaAsset` has `Name`,
@@ -257,6 +271,7 @@ blue5 product find --label new --type single --attr colour=Red --page 1
 blue5 product find --label new --all --format ndjson
 blue5 product attributes A-1001                # attribute table
 blue5 attribute get A-1001 colour              # just the value(s)
+blue5 attribute values 5f59cf80cff47e000c2ea630   # all values of a dictionary attribute (by id)
 blue5 product export --format ndjson > catalogue.ndjson   # streams; constant memory
 ```
 
