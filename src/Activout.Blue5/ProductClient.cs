@@ -11,7 +11,7 @@ public sealed class ProductClient
     public const int MaxPageSize = 50;
 
     private const int CursorPageSize = 100;   // PAPI maximum for /products/cursor/all
-    private const int NumbersBatchSize = 100; // PAPI: "numbers size must be between 1 and 100"
+    private const int BatchSize = 100;        // PAPI: "numbers/ids size must be between 1 and 100"
 
     private readonly Papi _papi;
 
@@ -32,10 +32,34 @@ public sealed class ProductClient
     public async Task<IReadOnlyList<Product>> GetByNumbers(IEnumerable<string> numbers, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(numbers);
+        return await PostInBatches(numbers, "v1/products/by-numbers", batch => new NumbersRequestDto(batch), cancellationToken);
+    }
+
+    /// <summary>Gets a product by its PAPI id (<see cref="Product.Id"/>), or <see langword="null"/> if it is not published in this context.</summary>
+    public async Task<Product?> GetById(string id, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(id);
+        var products = await GetByIds([id], cancellationToken);
+        return products.FirstOrDefault(p => string.Equals(p.Id, id, StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// Gets the products with the given PAPI ids (<see cref="Product.Id"/>, as found in other products' references).
+    /// Ids that do not exist are simply absent from the result. Large inputs are split into batches of 100 (the PAPI limit).
+    /// </summary>
+    public async Task<IReadOnlyList<Product>> GetByIds(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(ids);
+        return await PostInBatches(ids, "v1/products/by-ids", batch => new IdsRequestDto(batch), cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<Product>> PostInBatches(
+        IEnumerable<string> keys, string path, Func<string[], object> request, CancellationToken cancellationToken)
+    {
         var result = new List<Product>();
-        foreach (var batch in numbers.Distinct(StringComparer.Ordinal).Chunk(NumbersBatchSize))
+        foreach (var batch in keys.Distinct(StringComparer.Ordinal).Chunk(BatchSize))
         {
-            var response = await _papi.Post<ResultsDto>("v1/products/by-numbers", new NumbersRequestDto(batch), cancellationToken);
+            var response = await _papi.Post<ResultsDto>(path, request(batch), cancellationToken);
             result.AddRange((response.Results ?? []).Select(Mapping.ToProduct));
         }
 

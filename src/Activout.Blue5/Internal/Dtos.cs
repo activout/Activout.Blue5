@@ -84,6 +84,8 @@ internal sealed record CursorQueryDto(string? Cursor, int Limit);
 
 internal sealed record NumbersRequestDto(IReadOnlyList<string> Numbers);
 
+internal sealed record IdsRequestDto(IReadOnlyList<string> Ids);
+
 internal sealed record FilteringCriteriaDto(
     IReadOnlyList<string>? Numbers,
     IReadOnlyList<string>? Names,
