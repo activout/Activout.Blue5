@@ -202,7 +202,8 @@ value defined for the attribute, pass its id (not its number). Pages of 100 are 
 with `GetAll()`:
 
 ```csharp
-await foreach (SelectOption value in client.GetDictionaryValues(raw.Id!, cancellationToken))
+string dictionaryAttributeId = "YOUR-DICTIONARY-ATTRIBUTE-ID";
+await foreach (SelectOption value in client.GetDictionaryValues(dictionaryAttributeId, cancellationToken))
 {
     Console.WriteLine($"{value.Number} = {value.Value}");
 }
