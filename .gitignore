@@ -11,3 +11,6 @@ artifacts/
 
 # Local spec (not committed)
 Activout.Blue5-Code-Agent-Specification.md
+
+# Claude Code local state
+.claude/
