@@ -78,6 +78,8 @@ If queries return no products at all, you are probably using the wrong context. 
 ```csharp
 Product? product = await client.Products.GetByNumber("A-1001");       // null if not published
 IReadOnlyList<Product> some = await client.Products.GetByNumbers(["A-1001", "A-1002"]);
+Product? byId = await client.Products.GetById(product.Id);   // PAPI id, not the product number
+IReadOnlyList<Product> byIds = await client.Products.GetByIds(["5f00000000000000000000a1"]);
 
 await foreach (var p in client.Products.GetAll(cancellationToken))    // cursor streaming
 {
@@ -271,7 +273,8 @@ document. Each is covered by a test.
 - The cursor endpoint returns a non-null `nextCursor` even on the last page of data. The end of the
   stream is `{"nextCursor":null,"results":[]}`, so a full `GetAll()` makes one extra, empty request.
 - An unrecognised cursor silently restarts from the beginning. Blue5 never makes cursors up.
-- `/products/by-numbers` accepts 1–100 numbers. `GetByNumbers` batches larger inputs.
+- `/products/by-numbers` accepts 1–100 numbers and `/products/by-ids` 1–100 ids. `GetByNumbers` and `GetByIds` batch larger inputs.
+  Unknown ids are left out of the result rather than failing; `GET /products/{id}` returns 404 for them, which is why Blue5 uses `by-ids`.
 - Error bodies are `{"message": "...", "entityId": "..."}` without the documented `status`. A
   missing or wrong API key gives `403 {"message":"Forbidden"}`.
 - PAPI does return **429** in practice: a sequential `FindAll()` over ~6,000 products (125 requests)
