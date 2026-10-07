@@ -30,7 +30,7 @@ public sealed class ProductAttributes : IReadOnlyCollection<ProductAttribute>
     /// when the product has no value for it.
     /// </summary>
     /// <exception cref="AttributeConversionException">The value exists but cannot be converted to <typeparamref name="T"/>.</exception>
-    public T? Get<T>(AttributeKey<T> key)
+    public T Get<T>(AttributeKey<T> key)
     {
         var attribute = Find(key.Number);
         return attribute is null || attribute.IsEmpty ? key.DefaultValue : AttributeConverter.Convert<T>(attribute);

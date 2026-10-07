@@ -12,4 +12,4 @@ namespace Activout.Blue5.Attributes;
 /// </typeparam>
 /// <param name="Number">The Bluestone attribute number (compared ordinally).</param>
 /// <param name="DefaultValue">Returned when the product has no value for the attribute.</param>
-public readonly record struct AttributeKey<T>(string Number, T? DefaultValue = default);
+public readonly record struct AttributeKey<T>(string Number, T DefaultValue = default!);

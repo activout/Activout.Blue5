@@ -18,6 +18,19 @@ public class AttributeLookupTests
     }
 
     [Fact]
+    public void Nullability_FollowsTheKeyType()
+    {
+        var attributes = ProductWith().Attributes;
+
+        // Builds with warnings as errors: a key with a default needs no null handling, a nullable key is nullable.
+        string colour = attributes.Get(Colour);
+        string? nickname = attributes.Get(new AttributeKey<string?>("nickname"));
+
+        Assert.Equal(string.Empty, colour.Trim());
+        Assert.Null(nickname);
+    }
+
+    [Fact]
     public void PresentWithoutValues_ReturnsDefault()
     {
         var attributes = ProductWith(Attribute("colour", "text")).Attributes;

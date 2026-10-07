@@ -150,6 +150,11 @@ decimal? weight = product.Attributes.Get(Attributes.Weight); // null when absent
 ```
 
 - When an attribute is **missing** (or has no value), `Get` returns the key's `DefaultValue`.
+- **Nullability follows the key's type argument.** `Get` returns exactly `T`, so `AttributeKey<string>` with a
+  default gives a non-nullable `string` and you don't need `?? ""` at the call site. Declare
+  `AttributeKey<string?>` (or `decimal?`, ...) when "missing" should be `null`; the compiler then makes callers
+  check for it. Always give reference-type keys a default (`new("colour", "")`): without one the default is
+  `null` even though the type says otherwise.
 - When a value is **present but can't be converted**, `Get` throws `AttributeConversionException`.
   The exception carries the attribute number, target type, PAPI data type and raw value. Blue5
   never silently turns bad data into a default.
