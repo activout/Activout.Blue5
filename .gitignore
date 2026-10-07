@@ -14,3 +14,7 @@ Activout.Blue5-Code-Agent-Specification.md
 
 # Claude Code local state
 .claude/
+
+# Generated API docs (DocFX)
+docs/_site/
+docs/api/

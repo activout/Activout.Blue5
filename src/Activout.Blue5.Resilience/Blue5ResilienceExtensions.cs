@@ -6,6 +6,26 @@ using Polly;
 namespace Activout.Blue5.Resilience;
 
 /// <summary>Opt-in retry/backoff for Blue5 HTTP requests.</summary>
+/// <remarks>
+/// <para>
+/// This is a C# 14 extension member on <see cref="IHttpClientBuilder"/>. The API reference generator does not list
+/// extension blocks, so it is described here:
+/// <c>IHttpClientBuilder AddBlue5Resilience(this IHttpClientBuilder builder, Action&lt;HttpRetryStrategyOptions&gt;? configure = null)</c>.
+/// </para>
+/// <para>
+/// It adds a retry pipeline following Bluestone's published guidance: retries HTTP 429, 500, 502, 503, 504 and
+/// network failures (<see cref="HttpRequestException"/>) with exponential backoff (1 s, factor 2) and jitter, up to
+/// 5 attempts in total. PAPI's POST endpoints are read-only queries, so retrying them is safe. The core package
+/// itself never retries. Pass <c>configure</c> to adjust the defaults, for example <c>MaxRetryAttempts</c> or <c>Delay</c>.
+/// </para>
+/// <example>
+/// <code language="csharp">
+/// builder.Services
+///     .AddBlue5(options)
+///     .AddBlue5Resilience(retry => retry.MaxRetryAttempts = 2);
+/// </code>
+/// </example>
+/// </remarks>
 public static class Blue5ResilienceExtensions
 {
     /// <param name="builder">The builder returned by <c>AddBlue5</c>.</param>

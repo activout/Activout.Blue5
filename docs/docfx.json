@@ -1,0 +1,13 @@
+{
+  "metadata": [{
+    "src": [{ "src": "../src", "files": ["Activout.Blue5/*.csproj", "Activout.Blue5.Resilience/*.csproj"] }],
+    "dest": "api"
+  }],
+  "build": {
+    "content": [
+      { "files": ["api/**.yml", "api/toc.yml", "index.md", "toc.yml"] }
+    ],
+    "output": "_site",
+    "globalMetadata": { "_appTitle": "Activout.Blue5", "_enableSearch": true }
+  }
+}
