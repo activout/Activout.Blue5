@@ -78,7 +78,7 @@ If queries return no products at all, you are probably using the wrong context. 
 ```csharp
 Product? product = await client.Products.GetByNumber("A-1001");       // null if not published
 IReadOnlyList<Product> some = await client.Products.GetByNumbers(["A-1001", "A-1002"]);
-Product? byId = await client.Products.GetById(product.Id);   // PAPI id, not the product number
+Product? byId = await client.Products.GetById("5f00000000000000000000a1"); // PAPI id, not the product number
 IReadOnlyList<Product> byIds = await client.Products.GetByIds(["5f00000000000000000000a1"]);
 
 await foreach (var p in client.Products.GetAll(cancellationToken))    // cursor streaming
