@@ -18,7 +18,19 @@ internal sealed record ProductDto(
     string? GroupParentId,
     double? LastUpdate,
     double? CreateDate,
-    List<MediaDto>? Media);
+    List<MediaDto>? Media,
+    List<RelationDto>? Relations,
+    List<MetadataDto>? Metadata,
+    List<BundleDto>? Bundles,
+    List<string>? Variants,
+    List<string>? Groups,
+    string? RelatedProductsRelationSortingOrderSource);
+
+internal sealed record RelationDto(string? Id, string? Name, string? Number, string? ProductId, bool? Reverse, string? Direction);
+
+internal sealed record MetadataDto(string? Id, JsonElement? Value);
+
+internal sealed record BundleDto(string? ProductId, decimal? Quantity);
 
 internal sealed record MediaDto(
     string? Id,

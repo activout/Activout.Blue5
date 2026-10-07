@@ -47,10 +47,15 @@
     },
     { "id": "m2", "name": "Spec sheet", "contentType": "application/pdf", "downloadUri": "https://media.example.test/m2/spec.pdf", "previewUri": "https://media.example.test/m2/spec.pdf?f=jpg&w=400", "labels": [] }
   ],
+  "relations": [
+    { "id": "r1", "name": "Accessories", "number": "accessories", "productId": "p-acc", "reverse": false, "direction": "ONE_WAY" },
+    { "id": "r2", "productId": "p-sim", "reverse": true, "direction": "TWO_WAY" }
+  ],
+  "metadata": [{ "id": "origin", "value": "SE" }, { "id": "weights", "value": [1, 2] }],
+  "bundles": [{ "productId": "p-part", "quantity": 2 }],
+  "variants": ["v1", "v2"],
+  "groups": ["g1"],
+  "relatedProductsRelationSortingOrderSource": "RELATION_DEFINITION",
   "labels": ["new"],
-  "categories": ["5f00000000000000000000c1"],
-  "relations": [],
-  "bundles": [],
-  "variants": [],
-  "metadata": []
+  "categories": ["5f00000000000000000000c1"]
 }
