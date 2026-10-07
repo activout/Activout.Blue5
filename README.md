@@ -3,6 +3,7 @@
 An idiomatic, **read-only** .NET 10 client for the [Bluestone PIM](https://www.bluestonepim.com/)
 Public API (PAPI). It gives you typed product attributes and lazy, cursor-based streaming of the
 whole catalogue. You never deal with Bluestone JSON, DTOs or pagination.
+Generated [API reference](https://activout.github.io/Activout.Blue5/api/Activout.Blue5.html) is on GitHub Pages.
 
 > **Unofficial.** Activout.Blue5 is a community project maintained by Activout. It is not affiliated
 > with, endorsed by, or supported by Bluestone PIM.
@@ -337,6 +338,7 @@ Symbol packages (`.snupkg`) and SourceLink let you step into the Blue5 source wh
 
 ## Links
 
+- [Activout.Blue5 API reference](https://activout.github.io/Activout.Blue5/api/Activout.Blue5.html)
 - [Bluestone PIM Public API reference](https://docs.api.bluestonepim.com/)
 - [Attribute types in Public API](https://help.bluestonepim.com/attribute-types-in-public-api)
 - [Rate limits, retries and backoff](https://docs.api-us.bluestonepim.com/docs/rate-limits-retries-and-backoff)
