@@ -271,7 +271,14 @@ handles 429 because PAPI has been seen to return it in practice.
 
 ### Download
 
-Get the file for your computer from the [latest release](https://github.com/activout/Activout.Blue5/releases/latest). It is a single
+On a Mac (M1 or newer) or Linux with [Homebrew](https://brew.sh), install and update it with:
+
+```sh
+brew install activout/tap/blue5
+brew upgrade blue5
+```
+
+Otherwise, get the file for your computer from the [latest release](https://github.com/activout/Activout.Blue5/releases/latest). It is a single
 program with nothing else to install. The files are not code signed yet, so your computer warns you the first time.
 
 - **Windows:** download `blue5-win-x64.exe`, rename it to `blue5.exe` and open PowerShell in that folder. If Windows
