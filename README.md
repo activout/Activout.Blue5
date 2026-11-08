@@ -22,6 +22,8 @@ dotnet add package Activout.Blue5.Resilience   # optional, recommended
 dotnet tool install -g Activout.Blue5.Cli       # optional CLI
 ```
 
+The CLI also comes as a single program for Windows, macOS and Linux: see [CLI](#cli).
+
 ## Getting started
 
 ### Direct construction (console apps, scripts, tests)
@@ -266,6 +268,31 @@ Bluestone publishes a numeric rate limit only for the Management API, not for PA
 handles 429 because PAPI has been seen to return it in practice.
 
 ## CLI
+
+### Download
+
+Get the file for your computer from the [latest release](https://github.com/activout/Activout.Blue5/releases/latest). It is a single
+program with nothing else to install. The files are not code signed yet, so your computer warns you the first time.
+
+- **Windows:** download `blue5-win-x64.exe`, rename it to `blue5.exe` and open PowerShell in that folder. If Windows
+  says "Windows protected your PC", click **More info**, then **Run anyway**. Type `.\blue5.exe` where this README
+  says `blue5`.
+- **Mac (M1 or newer):** download `blue5-osx-arm64.tar.gz`, then in Terminal:
+  ```sh
+  cd ~/Downloads
+  tar -xzf blue5-osx-arm64.tar.gz
+  xattr -d com.apple.quarantine blue5
+  sudo mv blue5 /usr/local/bin/
+  ```
+- **Linux:** download `blue5-linux-x64.tar.gz`, run `tar -xzf blue5-linux-x64.tar.gz` and move `blue5` to a folder on
+  your `PATH`.
+
+Check a download against the release's `SHA256SUMS`, or verify its build provenance with
+`gh attestation verify <file> -R activout/Activout.Blue5`.
+
+With .NET 10 installed you can use the .NET tool instead: `dotnet tool install -g Activout.Blue5.Cli`.
+
+### Use
 
 ```bash
 export BLUE5_BASE_URL=https://api.bluestonepim.com
