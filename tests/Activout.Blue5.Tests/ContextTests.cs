@@ -14,7 +14,7 @@ public class ContextTests
             .Respond("application/json",
                 """[{"context":"en","contextName":"English"},{"context":"no","contextName":"Norwegian","future":1},{"context":"sv"}]""");
 
-        var contexts = await Client(mock).GetContexts();
+        var contexts = await Client(mock).GetContexts(TestContext.Current.CancellationToken);
 
         mock.VerifyNoOutstandingExpectation();
         Assert.Equal([new ContextInfo("en", "English"), new ContextInfo("no", "Norwegian"), new ContextInfo("sv", null)], contexts);

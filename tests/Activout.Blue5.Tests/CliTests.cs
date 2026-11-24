@@ -148,7 +148,7 @@ public class CliTests
     [Fact]
     public async Task MissingConfiguration_ExitsTwo()
     {
-        var code = await new Blue5Cli(_output, _error, _mock, _ => null).Run(["product", "list"]);
+        var code = await new Blue5Cli(_output, _error, _mock, _ => null).Run(["product", "list"], TestContext.Current.CancellationToken);
 
         Assert.Equal(2, code);
         Assert.Contains("BLUE5_BASE_URL", _error.ToString());

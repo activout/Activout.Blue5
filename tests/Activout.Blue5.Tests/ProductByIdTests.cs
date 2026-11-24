@@ -14,7 +14,7 @@ public class ProductByIdTests
             .WithContent("""{"ids":["id-A"]}""")
             .Respond("application/json", Results(Product("A")));
 
-        var product = await Client(mock).Products.GetById("id-A");
+        var product = await Client(mock).Products.GetById("id-A", TestContext.Current.CancellationToken);
 
         Assert.Equal("A", product?.Number);
         mock.VerifyNoOutstandingExpectation();
@@ -26,7 +26,7 @@ public class ProductByIdTests
         var mock = new MockHttpMessageHandler();
         mock.When(HttpMethod.Post, Root + "products/by-ids").Respond("application/json", Results());
 
-        Assert.Null(await Client(mock).Products.GetById("missing"));
+        Assert.Null(await Client(mock).Products.GetById("missing", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class ProductByIdTests
         });
         var ids = Enumerable.Range(0, 250).Select(i => $"I{i}").Concat(["I0", "I1"]);
 
-        var products = await Client(mock).Products.GetByIds(ids);
+        var products = await Client(mock).Products.GetByIds(ids, TestContext.Current.CancellationToken);
 
         Assert.Equal(3, bodies.Count);
         Assert.Equal(3, products.Count);
@@ -54,6 +54,6 @@ public class ProductByIdTests
     {
         var mock = new MockHttpMessageHandler(); // any request would throw: nothing is mocked
 
-        Assert.Empty(await Client(mock).Products.GetByIds([]));
+        Assert.Empty(await Client(mock).Products.GetByIds([], TestContext.Current.CancellationToken));
     }
 }

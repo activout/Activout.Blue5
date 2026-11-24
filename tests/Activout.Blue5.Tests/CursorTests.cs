@@ -16,7 +16,7 @@ public class CursorTests
         // Observed PAPI behaviour: the last data page still carries a cursor; the end is an empty page.
         mock.Expect(HttpMethod.Post, CursorUrl).WithContent("""{"cursor":"c2","limit":100}""").Respond("application/json", CursorPage(null));
 
-        var numbers = await Client(mock).Products.GetAll().Select(p => p.Number).ToListAsync();
+        var numbers = await Client(mock).Products.GetAll(TestContext.Current.CancellationToken).Select(p => p.Number).ToListAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(["A1", "A2", "B1"], numbers);
         mock.VerifyNoOutstandingExpectation();
@@ -28,7 +28,7 @@ public class CursorTests
         var mock = new MockHttpMessageHandler();
         var request = mock.When(HttpMethod.Post, CursorUrl).Respond("application/json", CursorPage(null, Products("A", 2)));
 
-        Assert.Equal(2, await Client(mock).Products.GetAll().CountAsync());
+        Assert.Equal(2, await Client(mock).Products.GetAll(TestContext.Current.CancellationToken).CountAsync(TestContext.Current.CancellationToken));
         Assert.Equal(1, mock.GetMatchCount(request));
     }
 
@@ -39,11 +39,11 @@ public class CursorTests
         var first = mock.When(HttpMethod.Post, CursorUrl).WithContent("""{"limit":100}""").Respond("application/json", CursorPage("c1", Products("A", 3)));
         var second = mock.When(HttpMethod.Post, CursorUrl).WithContent("""{"cursor":"c1","limit":100}""").Respond("application/json", CursorPage(null));
 
-        var numbers = await Client(mock).Products.GetAll()
+        var numbers = await Client(mock).Products.GetAll(TestContext.Current.CancellationToken)
             .Where(p => p.Number != "A1")
             .Select(p => p.Number)
             .Take(2)
-            .ToListAsync();
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(["A2", "A3"], numbers);
         Assert.Equal((1, 0), (mock.GetMatchCount(first), mock.GetMatchCount(second)));
@@ -55,7 +55,7 @@ public class CursorTests
         var mock = new MockHttpMessageHandler();
         var request = mock.When(HttpMethod.Post, CursorUrl).Respond("application/json", CursorPage(null));
 
-        _ = Client(mock).Products.GetAll();
+        _ = Client(mock).Products.GetAll(TestContext.Current.CancellationToken);
 
         Assert.Equal(0, mock.GetMatchCount(request));
     }

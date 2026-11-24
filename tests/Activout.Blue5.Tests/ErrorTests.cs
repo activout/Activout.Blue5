@@ -17,7 +17,7 @@ public class ErrorTests
             return response;
         });
 
-        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock, "xx").Products.GetByNumber("A"));
+        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock, "xx").Products.GetByNumber("A", TestContext.Current.CancellationToken));
 
         Assert.Equal((HttpStatusCode.NotFound, "Given context not found.", "xx", "req-1"), (ex.StatusCode, ex.PapiMessage, ex.EntityId, ex.RequestId));
         Assert.Equal("PAPI POST /v1/products/by-numbers failed with 404 Not Found: Given context not found. (entity xx)", ex.Message);
@@ -30,7 +30,7 @@ public class ErrorTests
         mock.When(HttpMethod.Post, Root + "products/by-numbers")
             .Respond(HttpStatusCode.BadRequest, "application/json", """{"status":400,"message":"bad","entityIds":["a","b"]}""");
 
-        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.GetByNumber("A"));
+        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.GetByNumber("A", TestContext.Current.CancellationToken));
 
         Assert.Equal(["a", "b"], ex.EntityIds);
     }
@@ -42,7 +42,7 @@ public class ErrorTests
         var request = mock.When(HttpMethod.Post, Root + "products/cursor/all")
             .Respond(HttpStatusCode.TooManyRequests, "application/json", """{"message":"Too Many Requests"}""");
 
-        var ex = await Assert.ThrowsAsync<BluestoneException>(async () => await Client(mock).Products.GetAll().ToListAsync());
+        var ex = await Assert.ThrowsAsync<BluestoneException>(async () => await Client(mock).Products.GetAll(TestContext.Current.CancellationToken).ToListAsync(TestContext.Current.CancellationToken));
 
         Assert.True(ex.IsRateLimited);
         Assert.Equal(HttpStatusCode.TooManyRequests, ex.StatusCode);
@@ -61,7 +61,7 @@ public class ErrorTests
             return response;
         });
 
-        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.Find(ProductQuery.All));
+        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.Find(ProductQuery.All, cancellationToken: TestContext.Current.CancellationToken));
 
         Assert.Equal("PAPI POST /v1/products/list failed with 429: Too Many Requests", ex.Message);
         Assert.True(ex.IsRateLimited);
@@ -74,7 +74,7 @@ public class ErrorTests
         var mock = new MockHttpMessageHandler();
         mock.When(HttpMethod.Post, Root + "products/by-numbers").Respond(HttpStatusCode.BadGateway, "text/html", "<html>Bad gateway</html>");
 
-        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.GetByNumber("A"));
+        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.GetByNumber("A", TestContext.Current.CancellationToken));
 
         Assert.Null(ex.PapiMessage);
         Assert.EndsWith(": <html>Bad gateway</html>", ex.Message);
@@ -86,7 +86,7 @@ public class ErrorTests
         var mock = new MockHttpMessageHandler();
         mock.When(HttpMethod.Post, Root + "products/by-numbers").Respond(HttpStatusCode.Forbidden, "application/json", """{"message":"Forbidden"}""");
 
-        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.GetByNumber("A"));
+        var ex = await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.GetByNumber("A", TestContext.Current.CancellationToken));
 
         Assert.DoesNotContain(ApiKey, ex.ToString());
     }
