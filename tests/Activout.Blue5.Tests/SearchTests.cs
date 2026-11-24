@@ -22,7 +22,7 @@ public class SearchTests
             Sort = "name:desc",
         };
 
-        var page = await Client(mock).Products.Find(query, page: 2, pageSize: 10);
+        var page = await Client(mock).Products.Find(query, page: 2, pageSize: 10, cancellationToken: TestContext.Current.CancellationToken);
 
         mock.VerifyNoOutstandingExpectation();
         Assert.Equal((21L, 2, 10, false), (page.TotalCount, page.Page, page.PageSize, page.HasNextPage));
@@ -38,7 +38,7 @@ public class SearchTests
             .WithContent("{}")
             .Respond("application/json", SearchPage(120, Products("A", 50)));
 
-        var page = await Client(mock).Products.Find(ProductQuery.All);
+        var page = await Client(mock).Products.Find(ProductQuery.All, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.True(page.HasNextPage);
         mock.VerifyNoOutstandingExpectation();
@@ -50,7 +50,7 @@ public class SearchTests
     [InlineData(1, 51)]
     public async Task Find_RejectsInvalidPaging(int page, int pageSize) =>
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
-            Client(new MockHttpMessageHandler()).Products.Find(ProductQuery.All, page, pageSize));
+            Client(new MockHttpMessageHandler()).Products.Find(ProductQuery.All, page, pageSize, cancellationToken: TestContext.Current.CancellationToken));
 
     [Fact]
     public async Task FindAll_WalksPagesUntilTotalCount()
@@ -60,7 +60,7 @@ public class SearchTests
         mock.Expect(HttpMethod.Post, Root + "products/list").WithQueryString("pageNo", "1").Respond("application/json", SearchPage(120, Products("B", 50)));
         mock.Expect(HttpMethod.Post, Root + "products/list").WithQueryString("pageNo", "2").Respond("application/json", SearchPage(120, Products("C", 20)));
 
-        var count = await Client(mock).Products.FindAll(new ProductQuery { Labels = ["new"] }).CountAsync();
+        var count = await Client(mock).Products.FindAll(new ProductQuery { Labels = ["new"] }, TestContext.Current.CancellationToken).CountAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(120, count);
         mock.VerifyNoOutstandingExpectation();
@@ -73,10 +73,10 @@ public class SearchTests
         var first = mock.When(HttpMethod.Post, Root + "products/list").WithQueryString("pageNo", "0").Respond("application/json", SearchPage(500, Products("A", 50)));
         var second = mock.When(HttpMethod.Post, Root + "products/list").WithQueryString("pageNo", "1").Respond("application/json", SearchPage(500));
 
-        Assert.Equal(5, await Client(mock).Products.FindAll(ProductQuery.All).Take(5).CountAsync());
+        Assert.Equal(5, await Client(mock).Products.FindAll(ProductQuery.All, TestContext.Current.CancellationToken).Take(5).CountAsync(TestContext.Current.CancellationToken));
         Assert.Equal((1, 0), (mock.GetMatchCount(first), mock.GetMatchCount(second)));
 
-        Assert.Equal(50, await Client(mock).Products.FindAll(ProductQuery.All).CountAsync());
+        Assert.Equal(50, await Client(mock).Products.FindAll(ProductQuery.All, TestContext.Current.CancellationToken).CountAsync(TestContext.Current.CancellationToken));
         Assert.Equal(1, mock.GetMatchCount(second));
     }
 }

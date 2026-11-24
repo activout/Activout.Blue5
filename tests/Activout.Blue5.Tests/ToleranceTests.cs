@@ -18,7 +18,7 @@ public class ToleranceTests
             ]}
             """);
 
-        var product = Assert.Single(await Client(mock).Products.GetAll().ToListAsync());
+        var product = Assert.Single(await Client(mock).Products.GetAll(TestContext.Current.CancellationToken).ToListAsync(TestContext.Current.CancellationToken));
 
         Assert.Equal("V", product.Attributes.Get(new AttributeKey<string>("sel")));
         Assert.Equal("""{"nested":1}""", product.Attributes.Get(new AttributeKey<SelectOption>("sel"))!.Metadata);

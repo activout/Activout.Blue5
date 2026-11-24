@@ -19,7 +19,7 @@ public class DictionaryValuesTests
         mock.Expect(HttpMethod.Post, CursorUrl).WithContent("""{"cursor":"c2","limit":100}""").Respond("application/json",
             """{"nextCursor":null,"results":[]}""");
 
-        var values = await Client(mock, "sv").GetDictionaryValues("def 1").ToListAsync();
+        var values = await Client(mock, "sv").GetDictionaryValues("def 1", TestContext.Current.CancellationToken).ToListAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal([new SelectOption("v1", "red", "Red", "#ff0000"), new SelectOption("v2", null, null)], values);
         mock.VerifyNoOutstandingExpectation();
@@ -31,7 +31,7 @@ public class DictionaryValuesTests
         var mock = new MockHttpMessageHandler();
         var request = mock.When(HttpMethod.Post, CursorUrl).Respond("application/json", CursorPage(null));
 
-        _ = Client(mock).GetDictionaryValues("def 1");
+        _ = Client(mock).GetDictionaryValues("def 1", TestContext.Current.CancellationToken);
 
         Assert.Equal(0, mock.GetMatchCount(request));
     }

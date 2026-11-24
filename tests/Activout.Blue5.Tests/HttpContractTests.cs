@@ -21,7 +21,7 @@ public class HttpContractTests
                  "categories":["c1"],"variantParentId":"p0","lastUpdate":1767225600000,"createDate":1735689600000,"attributes":[]}
                 """));
 
-        var product = await Client(mock).Products.GetByNumber("00123");
+        var product = await Client(mock).Products.GetByNumber("00123", TestContext.Current.CancellationToken);
 
         mock.VerifyNoOutstandingExpectation();
         Assert.NotNull(product);
@@ -39,7 +39,7 @@ public class HttpContractTests
         var mock = new MockHttpMessageHandler();
         mock.When(HttpMethod.Post, Root + "products/by-numbers").Respond("application/json", Results());
 
-        Assert.Null(await Client(mock).Products.GetByNumber("missing"));
+        Assert.Null(await Client(mock).Products.GetByNumber("missing", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class HttpContractTests
         });
         var numbers = Enumerable.Range(0, 250).Select(i => $"N{i}").Concat(["N0", "N1"]);
 
-        var products = await Client(mock).Products.GetByNumbers(numbers);
+        var products = await Client(mock).Products.GetByNumbers(numbers, TestContext.Current.CancellationToken);
 
         Assert.Equal(3, bodies.Count);
         Assert.Equal(3, products.Count);
@@ -66,7 +66,7 @@ public class HttpContractTests
     public async Task GetByNumbers_EmptyInput_MakesNoRequest()
     {
         var mock = new MockHttpMessageHandler();
-        Assert.Empty(await Client(mock).Products.GetByNumbers([]));
+        Assert.Empty(await Client(mock).Products.GetByNumbers([], TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -78,8 +78,8 @@ public class HttpContractTests
         var client = Client(mock);
 
         var swedish = client.WithContext("sv");
-        await swedish.Products.GetByNumber("A");
-        await client.Products.GetByNumber("A");
+        await swedish.Products.GetByNumber("A", TestContext.Current.CancellationToken);
+        await client.Products.GetByNumber("A", TestContext.Current.CancellationToken);
 
         mock.VerifyNoOutstandingExpectation();
         Assert.Equal(("sv", "en"), (swedish.Context, client.Context));
@@ -94,7 +94,7 @@ public class HttpContractTests
         mock.Expect(HttpMethod.Post, "https://papi.test/v1/products/by-numbers").Respond("application/json", Results());
         var client = new Blue5Client(mock.ToHttpClient(), new Blue5Options { BaseAddress = new Uri(baseAddress), ApiKey = "k" });
 
-        await client.Products.GetByNumber("A");
+        await client.Products.GetByNumber("A", TestContext.Current.CancellationToken);
 
         mock.VerifyNoOutstandingExpectation();
     }
@@ -109,7 +109,7 @@ public class HttpContractTests
             .ConfigurePrimaryHttpMessageHandler(() => mock);
         await using var provider = services.BuildServiceProvider();
 
-        var product = await provider.GetRequiredService<Blue5Client>().Products.GetByNumber("A");
+        var product = await provider.GetRequiredService<Blue5Client>().Products.GetByNumber("A", TestContext.Current.CancellationToken);
 
         Assert.Equal("A", product?.Number);
     }

@@ -73,7 +73,7 @@ public class CancellationTests
         await cts.CancelAsync();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
-            await Client(mock).Products.GetAll().WithCancellation(cts.Token).GetAsyncEnumerator().MoveNextAsync());
+            await Client(mock).Products.GetAll(TestContext.Current.CancellationToken).WithCancellation(cts.Token).GetAsyncEnumerator().MoveNextAsync());
         Assert.Equal(0, mock.GetMatchCount(request));
     }
 }

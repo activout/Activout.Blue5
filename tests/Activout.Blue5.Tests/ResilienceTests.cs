@@ -34,7 +34,7 @@ public class ResilienceTests
         var (client, provider) = ResilientClient(mock);
         await using var _ = provider;
 
-        Assert.NotNull(await client.Products.GetByNumber("A"));
+        Assert.NotNull(await client.Products.GetByNumber("A", TestContext.Current.CancellationToken));
         mock.VerifyNoOutstandingExpectation();
     }
 
@@ -47,7 +47,7 @@ public class ResilienceTests
         var (client, provider) = ResilientClient(mock);
         await using var _ = provider;
 
-        Assert.NotNull(await client.Products.GetByNumber("A"));
+        Assert.NotNull(await client.Products.GetByNumber("A", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class ResilienceTests
         var (client, provider) = ResilientClient(mock);
         await using var _ = provider;
 
-        var ex = await Assert.ThrowsAsync<BluestoneException>(() => client.Products.GetByNumber("A"));
+        var ex = await Assert.ThrowsAsync<BluestoneException>(() => client.Products.GetByNumber("A", TestContext.Current.CancellationToken));
 
         Assert.True(ex.IsRateLimited);
         Assert.Equal(5, mock.GetMatchCount(request));
@@ -76,7 +76,7 @@ public class ResilienceTests
         var (client, provider) = ResilientClient(mock);
         await using var _ = provider;
 
-        await Assert.ThrowsAsync<BluestoneException>(() => client.Products.GetByNumber("A"));
+        await Assert.ThrowsAsync<BluestoneException>(() => client.Products.GetByNumber("A", TestContext.Current.CancellationToken));
         Assert.Equal(1, mock.GetMatchCount(request));
     }
 
@@ -86,7 +86,7 @@ public class ResilienceTests
         var mock = new MockHttpMessageHandler();
         var request = mock.When(HttpMethod.Post, Url).Respond(HttpStatusCode.ServiceUnavailable);
 
-        await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.GetByNumber("A"));
+        await Assert.ThrowsAsync<BluestoneException>(() => Client(mock).Products.GetByNumber("A", TestContext.Current.CancellationToken));
         Assert.Equal(1, mock.GetMatchCount(request));
     }
 }
